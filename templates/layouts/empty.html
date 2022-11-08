@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no"/>
+<!--  <link rel="shortcut icon" href="/favicon.ico">-->
+  <th:block th:replace="fragments/head"></th:block>
+  <th:block layout:fragment="head"></th:block>
+  <style>
+      .horizontal-menu footer {
+          position: absolute;
+          width: 100%;
+          bottom: 0;
+      }
+  </style>
+</head>
+<body class="horizontal-menu blank-page" style="height: 100% !important;">
+<th:block layout:fragment="content"></th:block>
+<th:block th:replace="fragments/footer :: footer"></th:block>
+<script src="/assets/js/core/vendors.min.js"></script>
+<script src="/assets/js/core/app-menu.min.js"></script>
+<script src="/assets/js/core/app.min.js"></script>
+<script src="/assets/js/core/sweetalert2.all.min.js"></script>
+<script>
+    if (feather) {
+        feather.replace({
+            width: 14,
+            height: 14
+        })
+    }
+</script>
+<th:block layout:fragment="script"></th:block>
+</body>
+</html>

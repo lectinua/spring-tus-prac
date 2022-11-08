@@ -1,0 +1,97 @@
+<script src="/assets/js/core/vendors.min.js"></script>
+<script src="/assets/js/core/perfect-scrollbar.min.js"></script>
+<script src="/assets/js/core/app-menu.min.js"></script>
+<script src="/assets/js/core/app.min.js"></script>
+<script src="/assets/js/core/sweetalert2.all.min.js"></script>
+<script src="/assets/js/core/uppy.min.js"></script>
+<script src="/assets/js/core/uppy.locale.js"></script>
+<script src="/assets/js/comm/modal.js"></script>
+<script src="/assets/js/comm/util.js"></script>
+<script src="/assets/js/comm/file.js"></script>
+<div id="sign-modal-body" class="modal-body lc-modal">
+  <form id="sign-form" action="#">
+    <div class="mb-1">
+      <label for="sign-id" class="form-label">아이디</label>
+      <input type="text" class="form-control" id="sign-id" autofocus/>
+    </div>
+
+    <div class="mb-1">
+      <div class="d-flex justify-content-between">
+        <label class="form-label" for="sign-pw">비밀번호</label>
+      </div>
+      <div class="input-group input-group-merge form-password-toggle">
+        <input type="password" class="form-control form-control-merge" id="sign-pw"/>
+        <span class="input-group-text cursor-pointer">
+              <i data-feather="eye"></i>
+            </span>
+      </div>
+    </div>
+
+    <div class="mb-1">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="sign-save-id"/>
+        <label class="form-check-label" for="sign-save-id"> 아이디저장</label>
+      </div>
+    </div>
+
+    <button class="btn btn-primary w-100 mb-1" type="submit">로그인</button>
+    <button class="btn btn-success w-100 mb-1" type="button" id="btn-test">테스트</button>
+  </form>
+</div>
+<script th:inline="javascript">
+    $(function () {
+        if ( feather ) {
+            feather.replace({
+                width: 14,
+                height: 14
+            })
+        }
+
+        const signed = /*[[${userInfo != null}]]*/ false
+        if ( !signed )
+            window.location.href = '/login'
+    })
+
+    function logout() {
+        window.location.href = '/logout'
+    }
+
+    const signModal = new Modal('modals')
+        .title('로그인')
+        .body('sign-modal-body')
+        .onShow(function () {
+            const id = localStorage.getItem('rememberId')
+            if ( id ) {
+                Switch.check('sign-save-id')
+                $('#sign-id').val(id)
+            }
+        })
+        .btnClose(false)
+        .staticBackdrop()
+        .init()
+
+    const resigned = new Signal()
+
+    $('#sign-form').submit((e) => {
+        e.preventDefault()
+        Http.post('/login.json', {
+            userId: $('#sign-id').val(),
+            password: $('#sign-pw').val()
+        }).then(res => {
+            $('#sign-pw').val('')
+            if ( res.data ) {
+                signModal.hide()
+                $('.user-name').text(res.data.name)
+                $('.user-status').text(res.data.userId)
+                resigned.emit(res.data)
+            }
+            else Util.alert(res.message)
+        })
+    })
+
+    $('#btn-test').on('click', function () {
+        $('#sign-id').val('test')
+        $('#sign-pw').val('1234')
+        $('#sign-form').submit()
+    })
+</script>

@@ -1,0 +1,46 @@
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="header" class="horizontal-menu">
+  <nav class="header-navbar navbar-expand-lg navbar navbar-fixed align-items-center navbar-shadow navbar-brand-center"
+       data-nav="brand-center">
+    <div class="navbar-container d-flex content">
+      <!--로고-->
+      <div class="bookmark-wrapper d-flex align-items-center">
+        <a href="/">
+          <img src="/assets/logo.png"
+               alt="logo"
+               height="34">
+        </a>
+      </div>
+      <!--유저 메뉴-->
+      <ul class="nav navbar-nav align-items-center ms-auto">
+        <li class="nav-item dropdown dropdown-user">
+          <a class="nav-link dropdown-toggle dropdown-user-link"
+             id="dropdown-user"
+             href="#"
+             data-bs-toggle="dropdown"
+             aria-haspopup="true"
+             aria-expanded="false">
+            <div class="user-nav d-sm-flex d-none">
+              <span class="user-name fw-bolder my-50" th:text="${userInfo?.name}"></span>
+              <span class="user-status" th:text="${userInfo?.userId}"></span>
+            </div>
+            <span class="avatar">
+              <div class="round d-flex justify-content-center align-items-center bg-primary"
+                   style="width: 40px; height: 40px;">
+                <i data-feather="user" class="font-large-1"></i>
+              </div>
+            </span>
+          </a>
+          <!--드롭다운 메뉴-->
+          <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown-user">
+            <a class="dropdown-item" onclick="logout();">
+              <i data-feather="power" class="me-50"></i>
+              로그아웃
+            </a>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+</html>

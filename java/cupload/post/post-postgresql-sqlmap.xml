@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="post">
+    <select id="page" resultType="post">
+        select a.uid
+             , a.subject
+             , a.contents
+             , (select coalesce(string_agg(name, ', '), '')
+                  from file
+                 where uid = a.file_uid and use_at = 'Y' and saved = 'Y') as file_names
+             , a.reg_id
+             , b.name as reg_nm
+             , to_char(a.reg_dt at time zone 'kst', 'yyyy.mm.dd hh24:mi') as reg_dt
+          from post a
+          left join user b on b.user_id = a.reg_id
+         where 1=1
+           and a.use_at = 'Y'
+           <if test="@Ognl@isNotEmpty(subject)">
+           and a.subject LIKE '%' || #{subject} || '%'
+           </if>
+           <if test="@Ognl@isNotEmpty(contents)">
+           and a.contents LIKE '%' || #{contents} || '%'
+           </if>
+           <if test="@Ognl@isNotEmpty(regId)">
+           and a.reg_id LIKE '%' || #{regId} || '%'
+           </if>
+           <if test="@Ognl@isNotEmpty(regNm)">
+           and b.name LIKE '%' || #{regNm} || '%'
+           </if>
+         order by a.reg_dt desc
+        offset #{offset} limit #{limit}
+    </select>
+
+    <select id="count" resultType="int">
+        select count(*)
+          from post a
+          left join user b on b.user_id = a.reg_id
+         where 1=1
+           and a.use_at = 'Y'
+           <if test="@Ognl@isNotEmpty(subject)">
+           and a.subject LIKE '%' || #{subject} || '%'
+           </if>
+           <if test="@Ognl@isNotEmpty(contents)">
+           and a.contents LIKE '%' || #{contents} || '%'
+           </if>
+           <if test="@Ognl@isNotEmpty(regId)">
+           and a.reg_id LIKE '%' || #{regId} || '%'
+           </if>
+           <if test="@Ognl@isNotEmpty(regNm)">
+           and b.name LIKE '%' || #{regNm} || '%'
+           </if>
+    </select>
+
+    <select id="view" resultType="post">
+        select a.uid
+             , a.subject
+             , a.contents
+             , a.file_uid
+             , (select coalesce(string_agg(name, ', '), '')
+                  from file
+                 where uid = a.file_uid and use_at = 'Y' and saved = 'Y') as file_names
+             , a.reg_id
+             , b.name as reg_nm
+             , to_char(a.reg_dt at time zone 'kst', 'yyyy.mm.dd hh24:mi') as reg_dt
+             , a.updt_id
+             , to_char(a.updt_dt at time zone 'kst', 'yyyy.mm.dd hh24:mi') as updt_dt
+          from post a
+          left join user b on b.user_id = a.reg_id
+         where 1=1
+           and a.use_at = 'Y'
+           and a.uid = #{uid}
+    </select>
+
+    <insert id="insert" parameterType="post">
+        insert into post
+            ( subject
+            , contents
+            <if test="@Ognl@isNotEmpty(fileUid)">
+            , file_uid
+            </if>
+            , reg_id
+            , updt_id
+            )
+        values
+            ( #{subject}
+            , #{contents}
+            <if test="@Ognl@isNotEmpty(fileUid)">
+            , #{fileUid}
+            </if>
+            , #{regId}
+            , #{regId}
+            )
+    </insert>
+
+    <update id="update" parameterType="post">
+        update post
+           set subject = #{subject}
+             , contents = #{contents}
+             <if test="@Ognl@isNotEmpty(fileUid)">
+             , file_uid = #{fileUid}
+             </if>
+             , updt_id = #{regId}
+             , updt_dt = now()
+         where uid = #{uid}
+    </update>
+
+    <update id="delete" parameterType="post">
+        update post
+           set use_at = 'N'
+         where uid = #{uid}
+           and reg_id = #{regId}
+    </update>
+</mapper>
